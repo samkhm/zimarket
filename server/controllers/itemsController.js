@@ -12,7 +12,7 @@ exports.saveItem = async (req, res) => {
         };
 
         if(!req.file || !req.file.path){
-            return res.status(400).json({ message : "Image is required please"});
+            return res.status(400).json({ message : "Image is required!"});
         }
        
         const imageUrl = req.file.path;
