@@ -51,7 +51,7 @@ exports.getItems = async (req, res) => {
 
         if (!catalog || catalog.length === 0) {
             console.log("No items available");
-            return res.status(404).json({ message: "No items available" });
+            return res.status(405).json({ message: "No items available" });
             
         }
 

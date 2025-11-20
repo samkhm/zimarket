@@ -18,6 +18,7 @@ export default function Catalog() {
     try {
       setLoadingInitial(true);
       const res = await API.get("/catalog/getItems");
+      console.log(res.data?.message);
       const itemsFromAPI = res.data || [];
 
       // Remove any deleted items (extra safety, though backend should already filter)
