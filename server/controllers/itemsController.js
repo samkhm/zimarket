@@ -46,10 +46,11 @@ exports.saveItem = async (req, res) => {
 // ======================= GET ITEMS ==========================
 exports.getItems = async (req, res) => {
     try {
-        const catalog = await Store.find();
+        // Only return items that are not deleted
+        const catalog = await Store.find({ deleted: false }).sort({ createdAt: -1 });
 
-        if (catalog.length === 0) {
-            return res.status(404).json({ message: "No items" });
+        if (!catalog || catalog.length === 0) {
+            return res.status(404).json({ message: "No items available" });
         }
 
         return res.json(catalog);
@@ -58,6 +59,7 @@ exports.getItems = async (req, res) => {
         return res.status(500).json({ error: "Server failed to get items" });
     }
 };
+
 
 exports.getOneItem = async (req, res) => {
     try {
@@ -129,17 +131,20 @@ exports.deleteItem = async (req, res) => {
             return res.status(404).json({ message: "Item not available" });
         }
 
-        // Delete from Cloudinary
+        // Optional: delete image from Cloudinary
         if (item.image && item.image.includes("cloudinary.com")) {
             const publicId = item.image.split("/").pop().split(".")[0];
             await cloudinary.uploader.destroy(publicId);
         }
 
-        await Store.findByIdAndDelete(req.params.id);
+        // Soft delete
+        item.deleted = true;
+        await item.save();
 
-        return res.json({ message: "Item deleted" });
+        return res.json({ message: "Item deleted successfully" });
     } catch (error) {
         console.error("Server failed to delete item:", error);
         return res.status(500).json({ error: "Server failed to delete item" });
     }
 };
+

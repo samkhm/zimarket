@@ -12,19 +12,29 @@ export default function Catalog() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
-  // Fetch all items
+
+  // Fetch all items from API
   const fetchItems = async () => {
     try {
       setLoadingInitial(true);
       const res = await API.get("/catalog/getItems");
-      
       const itemsFromAPI = res.data || [];
 
-      setAllItems(itemsFromAPI);
-      setDisplayedItems(itemsFromAPI.slice(0, CHUNK_SIZE));
-      setHasMore(itemsFromAPI.length > CHUNK_SIZE);
+      // Remove any deleted items (extra safety, though backend should already filter)
+      const filteredItems = itemsFromAPI.filter(item => !item.deleted);
 
+      setAllItems(filteredItems);
+
+      setDisplayedItems(prev => {
+        // Merge previous items with new ones and remove duplicates
+        const idsFromAPI = filteredItems.map(i => i._id);
+        const merged = prev
+          .filter(i => idsFromAPI.includes(i._id)) // keep items still in API
+          .concat(filteredItems.filter(i => !prev.some(p => p._id === i._id))); // add new items
+        return merged.slice(0, CHUNK_SIZE); // show first chunk
+      });
+
+      setHasMore(filteredItems.length > CHUNK_SIZE);
     } catch (error) {
       console.log("Error fetching items:", error);
     } finally {
@@ -36,7 +46,7 @@ export default function Catalog() {
     fetchItems();
   }, []);
 
-  // Infinite scroll load
+  // Infinite scroll
   const loadMoreItems = () => {
     if (!hasMore || loadingMore) return;
 
@@ -50,20 +60,18 @@ export default function Catalog() {
       return;
     }
 
-    setDisplayedItems([...displayedItems, ...nextChunk]);
+    setDisplayedItems(prev => [...prev, ...nextChunk]);
     setLoadingMore(false);
   };
 
   // Pull-to-refresh
   const handleRefresh = async () => {
     setRefreshing(true);
-
     await fetchItems();
-
     setRefreshing(false);
   };
 
-   // Animated item
+  // Animated item rendering
   const renderAnimatedItem = ({ item, index }) => {
     const fade = new Animated.Value(0);
     const scale = new Animated.Value(0.8);
@@ -103,26 +111,20 @@ export default function Catalog() {
           onEndReachedThreshold={0.5}
           refreshing={refreshing}
           onRefresh={handleRefresh}
+          extraData={displayedItems} // forces re-render when items change
           contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
 
-          // Spinner for infinite scroll
-          ListFooterComponent={
-            loadingMore ? (
-              <ActivityIndicator size="large" color="#000" />
-            ) : null
-          }
+          ListFooterComponent={loadingMore ? <ActivityIndicator size="large" color="#000" /> : null}
 
-          // EMPTY STATE (works with pull-to-refresh)
           ListEmptyComponent={
             !loadingInitial && (
               <View className="flex-1 items-center justify-center mt-10">
-                <Text className="text-lg text-gray-400 italic">No items added. Pull to refresh</Text>
+                <Text className="text-lg text-gray-400 italic">No items available. Pull to refresh</Text>
               </View>
             )
           }
         />
 
-        {/* Initial loading overlay */}
         {loadingInitial && (
           <View className="absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center">
             <ActivityIndicator size="large" color="#000" />
