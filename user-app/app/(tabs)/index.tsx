@@ -12,8 +12,7 @@ export default function Catalog() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(null);
-
+  
   // Fetch all items
   const fetchItems = async () => {
     try {
@@ -76,7 +75,7 @@ export default function Catalog() {
 
     return (
       <Animated.View style={{ opacity: fade, transform: [{ scale }] }}>
-        <Item item={item} loadingDelete={loadingDelete} />
+        <Item item={item} />
       </Animated.View>
     );
   };
