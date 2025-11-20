@@ -1,5 +1,5 @@
 const express = require("express");
-const { saveItem, getItems, updateItem, deleteItem} = require("../controllers/itemsController");
+const { saveItem, getItems, getOneItem, updateItem, deleteItem} = require("../controllers/itemsController");
 const router = express.Router();
 const upload = require("../middlewares/uploads");
 
@@ -11,6 +11,7 @@ const upload = require("../middlewares/uploads");
 
 router.post('/saveItem', upload.single("file"), saveItem);
 router.get('/getItems', getItems);
+router.get("/getOneItem/:id", getOneItem);
 router.put('/updateItem/:id', updateItem, upload.single("file"));
 router.delete('/deleteItem/:id', deleteItem);
 

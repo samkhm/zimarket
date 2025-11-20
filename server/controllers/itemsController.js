@@ -59,6 +59,24 @@ exports.getItems = async (req, res) => {
     }
 };
 
+exports.getOneItem = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const item = await Store.findById(id);
+
+        if (!item) {
+            return res.status(404).json({ message: "Item not found" });
+        }
+
+        return res.json(item);
+
+    } catch (error) {
+        console.error("Failed to get item:", error);
+        return res.status(500).json({ error: "Failed to get item" });
+    }
+};
+
+
 // ======================= UPDATE ITEM ==========================
 exports.updateItem = async (req, res) => {
     try {
