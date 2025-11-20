@@ -50,8 +50,7 @@ exports.getItems = async (req, res) => {
         const catalog = await Store.find({ deleted: false }).sort({ createdAt: -1 });
 
         if (!catalog || catalog.length === 0) {
-            console.log("No items available");
-            return res.status(405).json({ message: "No items available" });
+            return res.status(404).json({ message: "No items available" });
             
         }
 
