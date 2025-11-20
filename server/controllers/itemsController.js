@@ -34,7 +34,7 @@ exports.saveItem = async (req, res) => {
         });
 
         return res.status(201).json({
-            message: "Saved!",
+            message: "Saved",
             savedItem,
         });
     } catch (error) {
