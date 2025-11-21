@@ -79,6 +79,22 @@ export default function _layout() {
               ),
             }}
           />
+
+          <Tabs.Screen
+            name="history"
+            options={{
+              title: 'History',
+              headerShown: false,
+              tabBarIcon: ({ focused }) => (
+                <TabIcon
+                  focused={focused}
+                  IconComponent={(props) => <Feather name="archive" {...props} />}
+                  title="History"
+                />
+              ),
+            }}
+          />
+
         </Tabs>
       );
 }

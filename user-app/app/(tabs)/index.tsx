@@ -17,23 +17,17 @@ export default function Catalog() {
   const fetchItems = async () => {
     try {
       setLoadingInitial(true);
+
       const res = await API.get("/catalog/getItems");
       const itemsFromAPI = res.data || [];
 
-      // Remove any deleted items (extra safety, though backend should already filter)
+      // Ensure deleted items are removed (extra safety)
       const filteredItems = itemsFromAPI.filter(item => !item.deleted);
 
       setAllItems(filteredItems);
 
-      setDisplayedItems(prev => {
-        // Merge previous items with new ones and remove duplicates
-        const idsFromAPI = filteredItems.map(i => i._id);
-        const merged = prev
-          .filter(i => idsFromAPI.includes(i._id)) // keep items still in API
-          .concat(filteredItems.filter(i => !prev.some(p => p._id === i._id))); // add new items
-        return merged.slice(0, CHUNK_SIZE); // show first chunk
-      });
-
+      // Replace displayedItems with new array to force FlatList re-render
+      setDisplayedItems([...filteredItems.slice(0, CHUNK_SIZE)]);
       setHasMore(filteredItems.length > CHUNK_SIZE);
     } catch (error) {
       console.log("Error fetching items:", error);
@@ -60,6 +54,7 @@ export default function Catalog() {
       return;
     }
 
+    // Always create a new array to force FlatList re-render
     setDisplayedItems(prev => [...prev, ...nextChunk]);
     setLoadingMore(false);
   };
@@ -102,6 +97,7 @@ export default function Catalog() {
       <View className="bg-gray-100 flex-1 rounded p-2">
 
         <FlatList
+          key={displayedItems.length} // changing key forces full reset when items change
           data={displayedItems}
           keyExtractor={(item) => item._id}
           renderItem={renderAnimatedItem}
@@ -111,7 +107,7 @@ export default function Catalog() {
           onEndReachedThreshold={0.5}
           refreshing={refreshing}
           onRefresh={handleRefresh}
-          extraData={displayedItems} // forces re-render when items change
+          extraData={displayedItems} // ensures re-render when items change
           contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
 
           ListFooterComponent={loadingMore ? <ActivityIndicator size="large" color="#000" /> : null}
@@ -119,7 +115,9 @@ export default function Catalog() {
           ListEmptyComponent={
             !loadingInitial && (
               <View className="flex-1 items-center justify-center mt-10">
-                <Text className="text-lg text-gray-400 italic">No items available. Pull to refresh</Text>
+                <Text className="text-lg text-gray-400 italic">
+                  No items available. Pull to refresh
+                </Text>
               </View>
             )
           }
