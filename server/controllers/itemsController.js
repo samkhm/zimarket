@@ -61,6 +61,24 @@ exports.getItems = async (req, res) => {
     }
 };
 
+// get users items
+exports.getItemsForUsers = async (req, res) => {
+    try {
+        // Only return items that are not deleted
+        const catalog = await Store.find({ deleted: false, available : true }).sort({ createdAt: -1 });
+
+        if (!catalog || catalog.length === 0) {
+            return res.status(404).json({ message: "No items available" });
+            
+        }
+
+        return res.json(catalog);
+    } catch (error) {
+        console.error("Server failed to get items:", error);
+        return res.status(500).json({ error: "Server failed to get items" });
+    }
+};
+
 
 exports.getOneItem = async (req, res) => {
     try {
@@ -123,6 +141,49 @@ exports.updateItem = async (req, res) => {
         return res.status(500).json({ error: "Server failed to update item" });
     }
 };
+
+//mark item unavailbe
+exports.markItemsUnavailable = async (req, res) => {
+    try {
+        const { itemIds } = req.body;
+
+        if (!itemIds || itemIds.length === 0) {
+            return res.status(400).json({ message: "No items provided" });
+        }
+
+        await Store.updateMany(
+            { _id: { $in: itemIds } },
+            { $set: { available: false } }
+        );
+
+        res.json({ message: "Items marked unavailable" });
+    } catch (error) {
+        console.error("Failed to update availability:", error);
+        res.status(500).json({ error: "Failed to update availability" });
+    }
+};
+
+
+//make item availble
+exports.markItemAvailable = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const item = await Store.findById(id);
+        if (!item) {
+            return res.status(404).json({ message: "Item not found" });
+        }
+
+        item.available = true;
+        await item.save();
+
+        res.json({ message: "Item marked available" });
+    } catch (error) {
+        console.error("Failed to mark item available:", error);
+        res.status(500).json({ error: "Failed to mark item available" });
+    }
+};
+
 
 // ======================= DELETE ITEM ==========================
 exports.deleteItem = async (req, res) => {

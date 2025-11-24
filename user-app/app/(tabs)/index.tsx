@@ -18,7 +18,7 @@ export default function Catalog() {
     try {
       setLoadingInitial(true);
 
-      const res = await API.get("/catalog/getItems");
+      const res = await API.get("/catalog/getItemsForUsers");
       const itemsFromAPI = res.data || [];
 
       // Ensure deleted items are removed (extra safety)
