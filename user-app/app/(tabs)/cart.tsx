@@ -119,6 +119,28 @@ export default function CartPage() {
       }
   
       const availableOrderItems = items;
+
+      // to history
+         // 3️⃣ Compute total
+    const total = availableOrderItems.reduce(
+      (sum, item) => sum + Number(item.price || 0),
+      0
+    );
+
+        // 4️⃣ Save to order history
+    const historyRaw = await AsyncStorage.getItem("@order_history");
+    const history = historyRaw ? JSON.parse(historyRaw) : [];
+    const orderEntry = {
+      id: Date.now(),
+      items: availableOrderItems,
+      total,
+      name,
+      phone,
+      location,
+      date: new Date().toISOString(),
+    };
+    history.push(orderEntry);
+    await AsyncStorage.setItem("@order_history", JSON.stringify(history));
   
       // --- SEND WHATSAPP MESSAGE ---
       const adminNumber = "254745801435";
@@ -164,10 +186,12 @@ export default function CartPage() {
       setLocation("");
   
       showToast("Order submitted!");
+
+    // save to order history
   
     } catch (error) {
       console.log("Order submission error:", error);
-      Alert.alert("Error", "Failed to submit order.");
+      Alert.alert("", "Item already taken");
     }
   };
   
