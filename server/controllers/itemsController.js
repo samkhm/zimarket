@@ -145,23 +145,24 @@ exports.updateItem = async (req, res) => {
 //mark item unavailbe
 exports.markItemsUnavailable = async (req, res) => {
     try {
-        const { itemIds } = req.body;
-
-        if (!itemIds || itemIds.length === 0) {
-            return res.status(400).json({ message: "No items provided" });
-        }
-
-        await Store.updateMany(
-            { _id: { $in: itemIds } },
-            { $set: { available: false } }
-        );
-
-        res.json({ message: "Items marked unavailable" });
+      const { itemIds } = req.body;
+  
+      if (!itemIds || !Array.isArray(itemIds)) {
+        return res.status(400).json({ message: "itemIds array is required" });
+      }
+  
+      await Store.updateMany(
+        { _id: { $in: itemIds } },
+        { $set: { available: false } }
+      );
+  
+      res.json({ message: "Items marked unavailable" });
     } catch (error) {
-        console.error("Failed to update availability:", error);
-        res.status(500).json({ error: "Failed to update availability" });
+      console.error("Failed to mark items unavailable:", error);
+      res.status(500).json({ error: "Failed to update items" });
     }
-};
+  };
+  
 
 
 

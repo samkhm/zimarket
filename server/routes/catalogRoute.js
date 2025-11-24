@@ -14,7 +14,7 @@ router.get('/getItems', getItems);
 router.get('/getItemsForUsers', getItemsForUsers);
 router.get("/getOneItem/:id", getOneItem);
 router.put('/updateItem/:id', updateItem, upload.single("file"));
-router.post("/catalog/markUnavailable", markItemsUnavailable);
+router.post("/markUnavailable", markItemsUnavailable);
 router.delete('/deleteItem/:id', deleteItem);
 
 
