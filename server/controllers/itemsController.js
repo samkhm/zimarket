@@ -65,7 +65,7 @@ exports.getItems = async (req, res) => {
 exports.getItemsForUsers = async (req, res) => {
     try {
         // Only return items that are not deleted
-        const catalog = await Store.find({ deleted: false, available : true }).sort({ createdAt: -1 });
+        const catalog = await Store.find({ deleted: false }).sort({ createdAt: -1 });
 
         if (!catalog || catalog.length === 0) {
             return res.status(404).json({ message: "No items available" });
