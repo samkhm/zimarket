@@ -1,5 +1,5 @@
 const express = require("express");
-const { saveItem, getItems, getItemsForUsers, getOneItem, updateItem, deleteItem, markItemsUnavailable, markItemAvailable} = require("../controllers/itemsController");
+const { saveItem, getItems, getItemsForUsers, getOneItem, updateItem, deleteItem, markItemsUnavailable} = require("../controllers/itemsController");
 const router = express.Router();
 const upload = require("../middlewares/uploads");
 
@@ -15,7 +15,6 @@ router.get('/getItemsForUsers', getItemsForUsers);
 router.get("/getOneItem/:id", getOneItem);
 router.put('/updateItem/:id', updateItem, upload.single("file"));
 router.post("/catalog/markUnavailable", markItemsUnavailable);
-router.patch("/catalog/markAvailable/:id", markItemAvailable);
 router.delete('/deleteItem/:id', deleteItem);
 
 

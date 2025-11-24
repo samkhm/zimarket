@@ -76,21 +76,10 @@ export default function CartPage() {
 
   const removeItem = async (id: string) => {
     const updated = items.filter((item) => item.id !== id);
-  
-    // Save new cart
     await AsyncStorage.setItem("@menu_items", JSON.stringify(updated));
     setItems(updated);
-  
-    // Restore availability on backend
-    try {
-      await API.patch(`/catalog/markAvailable/${id}`);
-    } catch (error) {
-      console.log("Failed to restore availability:", error);
-    }
-  
     showToast("Item removed");
   };
-  
 
   const clearCart = async () => {
     await AsyncStorage.removeItem("@menu_items");
@@ -112,7 +101,7 @@ export default function CartPage() {
   
     try {
       // VALIDATE items
-      const res = await API.get("/catalog/getItems");
+      const res = await API.get("/catalog/getItemsForUsers");
       const valid = res.data.filter((i) => i.available);
       const validIds = valid.map((i) => i._id);
   
@@ -132,7 +121,7 @@ export default function CartPage() {
       const availableOrderItems = items;
   
       // --- SEND WHATSAPP MESSAGE ---
-      const adminNumber = "254114303482";
+      const adminNumber = "254745801435";
   
       const itemDetails = availableOrderItems
         .map((item) => `• ${item.name} (${item.size}) - Ksh ${item.price}`)

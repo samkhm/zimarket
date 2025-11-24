@@ -164,25 +164,7 @@ exports.markItemsUnavailable = async (req, res) => {
 };
 
 
-//make item availble
-exports.markItemAvailable = async (req, res) => {
-    try {
-        const { id } = req.params;
 
-        const item = await Store.findById(id);
-        if (!item) {
-            return res.status(404).json({ message: "Item not found" });
-        }
-
-        item.available = true;
-        await item.save();
-
-        res.json({ message: "Item marked available" });
-    } catch (error) {
-        console.error("Failed to mark item available:", error);
-        res.status(500).json({ error: "Failed to mark item available" });
-    }
-};
 
 
 // ======================= DELETE ITEM ==========================
