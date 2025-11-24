@@ -146,21 +146,11 @@ export default function CartPage() {
       await Linking.openURL(url);
   
       // --- UPDATE BACKEND: MARK ITEMS UNAVAILABLE ---
-      try {
-        const resUp =  await API.post("/catalog/markUnavailable", {
-          itemIds: availableOrderItems.map((item) => item.id),
-        });
-        
-      } catch (error) {
-        console.log("update error :", error);
-        
-      }
+      await API.post("/catalog/markUnavailable", {
+        itemIds: availableOrderItems.map((item) => item.id),
+      });
+      
      
-      
-      
-      
-        
-  
       // Clear cart
       await AsyncStorage.removeItem("@menu_items");
       setItems([]);
