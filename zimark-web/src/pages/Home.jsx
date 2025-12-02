@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import Item from '@/components/Item'
 import API from '@/services/api'
 import Loader from '@/components/Loader';
-import Header from '@/components/Header';
 
-export default function Home() {
+
+export default function Home({ addCart}) {
 
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -26,12 +26,13 @@ export default function Home() {
         getItems();
     }, []);
 
+  
     return (
         <>
-        <Header />
+        
         <div className='h-screen w-screen'>       
 
-            <div className='h-full p-10 flex flex-wrap flex-start'>
+            <div className='h-full p-10 flex flex-wrap flex-start gap-3'>
                 {loading ? (
                     <div className='w-full flex items-center justify-center'>
                         <Loader />
@@ -39,7 +40,7 @@ export default function Home() {
                     
                 ) : items.length > 0 ? (
                     items.map((item) => (
-                        <Item key={item.id} item={item} />
+                        <Item key={item.id} item={item} addCart={addCart}/>
                     ))
                 ) : (
                     <div className='w-full flex items-center justify-center'>

@@ -16,7 +16,7 @@ import {
   } from "@/components/ui/dialog";
   import { Button } from "@/components/ui/button";
 
-export default function Item({ item }){
+export default function Item({ item, addCart }){
     return(
         <Dialog>
         <DialogTrigger asChild>
@@ -62,7 +62,9 @@ export default function Item({ item }){
 
             <div className="flex justify-between items-center">
               <p className="text-2xl font-semibold text-gray-800">Ksh. {item.price}</p>
-              <Button className="rounded-full border-3 border-green-500 text-green-700 bg-gray-100 hover:bg-gray-800 hover:text-white px-6">
+              <Button className="rounded-full border-3 border-green-500 text-green-700 bg-gray-100 hover:bg-gray-800 hover:text-white px-6"
+              onClick={() => addCart(item)}
+              >
                 Add to Cart
               </Button>
             </div>
