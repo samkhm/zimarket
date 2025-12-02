@@ -2,14 +2,19 @@ import { useState, useEffect } from "react";
 import { HiMenu, HiX, HiShoppingCart } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 
-export default function Header({ cartCount }) {
+export default function Header({ cartCount, items }) {
+
+
   const navigate = useNavigate();
 
-  const backgrounds = [
-    "https://images.pexels.com/photos/34385118/pexels-photo-34385118.jpeg",
-    "https://images.pexels.com/photos/34955542/pexels-photo-34955542.jpeg",
-    "https://images.pexels.com/photos/33716616/pexels-photo-33716616.jpeg",
+  const defaultBackgrounds = [
+    "https://images.pexels.com/photos/934070/pexels-photo-934070.jpeg",
+    "https://images.pexels.com/photos/325876/pexels-photo-325876.jpeg",
+    "https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg",
+    
   ];
+
+  const backgrounds = items.length > 0 ? items.map((items) => items.image) : defaultBackgrounds;
 
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
@@ -34,7 +39,7 @@ export default function Header({ cartCount }) {
             to="/"
             className="border-b-4 border-transparent hover:border-blue-400 cursor-pointer transition duration-300"
           >
-            Home
+            Shop
           </Link>
           <Link
             to="/cart"

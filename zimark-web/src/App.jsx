@@ -5,15 +5,38 @@ import Header from "./components/Header";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
+import API from '@/services/api'
 
 export default function App() {
   const [cartItems, setCartItems] = useState([]);
+  
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const getItems = async () => {
+      setLoading(true);
+      try {
+          const res = await API.get("/catalog/getItems");
+          setItems(res.data);
+          console.log(res.data);
+      } catch (error) {
+          console.log("Failed to get Items", error);
+      } finally {
+          setLoading(false);
+      }
+  };
+ 
+  useEffect(() =>{
+    getItems();
+  }, []);
 
   // Load cart from localStorage
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) setCartItems(JSON.parse(storedCart));
   }, []);
+
+
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
@@ -73,9 +96,9 @@ export default function App() {
     <>
     <Toaster position="top-right" reverseOrder={false} />
     <BrowserRouter>
-      <Header cartCount={cartItems.length} />
+      <Header cartCount={cartItems.length} items={items} />
       <Routes>
-        <Route path="/" element={<Home addCart={addCart} />} />
+        <Route path="/" element={<Home addCart={addCart} items={items} loading={loading} />} />
         <Route
           path="/cart"
           element={

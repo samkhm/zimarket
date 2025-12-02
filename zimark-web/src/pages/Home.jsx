@@ -1,30 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import Item from '@/components/Item'
-import API from '@/services/api'
 import Loader from '@/components/Loader';
 
 
-export default function Home({ addCart}) {
-
-    const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    const getItems = async () => {
-        setLoading(true);
-        try {
-            const res = await API.get("/catalog/getItems");
-            setItems(res.data);
-            console.log(res.data);
-        } catch (error) {
-            console.log("Failed to get Items", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        getItems();
-    }, []);
+export default function Home({ addCart, items, loading}) {
 
   
     return (
