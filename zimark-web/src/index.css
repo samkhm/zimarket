@@ -1,6 +1,23 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
+/* Hide ALL scrollbars */
+* {
+  scrollbar-width: none;      /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none;              /* Chrome, Safari, Edge */
+}
+
+html, body {
+  overflow-x: hidden;         /* Remove horizontal scrolling */
+}
+
+
+
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
