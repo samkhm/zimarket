@@ -20,11 +20,7 @@ export default function App() {
           setItems(res.data);
           // console.log(res.data);
       } catch (error) {
-        if (error.response && error.response.status === 404) {
-          // Ignore 404 errors
-        } else {
-          console.warn("Error fetching items:", error);
-        }
+          // console.log("No Items");
       } finally {
           setLoading(false);
       }
