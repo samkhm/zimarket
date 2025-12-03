@@ -56,7 +56,7 @@ exports.getItems = async (req, res) => {
 
         return res.json(catalog);
     } catch (error) {
-        console.error("Server failed to get items:", error);
+        // console.error("Server failed to get items:", error);
         return res.status(500).json({ error: "Server failed to get items" });
     }
 };

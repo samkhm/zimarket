@@ -102,13 +102,15 @@ export default function Cart({ cartItems, removeCart, updateCartQuantity }) {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gray-100 p-6 md:p-12">
-      <h1 className="text-3xl font-bold mb-6 text-center">Your Cart</h1>
-
-      {cartItems.length === 0 ? (
-        <p className="text-center text-gray-500">Your cart is empty.</p>
-      ) : (
-        <div className="overflow-x-auto">
+    <div className="w-full min-h-screen bg-gray-100 p-4 md:p-12">
+    <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center">Your Cart</h1>
+  
+    {cartItems.length === 0 ? (
+      <p className="text-center text-gray-500">Your cart is empty.</p>
+    ) : (
+      <div className="overflow-x-hidden">
+        {/* TABLE WRAPPER */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full bg-white rounded-lg shadow-md">
             <thead className="bg-gray-200 text-gray-700">
               <tr>
@@ -116,7 +118,7 @@ export default function Cart({ cartItems, removeCart, updateCartQuantity }) {
                 <th className="p-4 text-left">Price</th>
                 <th className="p-4 text-left">Quantity</th>
                 <th className="p-4 text-left">Subtotal</th>
-                <th className="p-4">Action</th>
+                <th className="p-4 text-center">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -126,32 +128,35 @@ export default function Cart({ cartItems, removeCart, updateCartQuantity }) {
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-16 h-16 object-cover rounded"
+                      className="w-14 h-14 object-cover rounded"
                     />
-                    <span>{item.name}</span>
+                    <span className="font-medium">{item.name}</span>
                   </td>
+  
                   <td className="p-4">Ksh. {Number(item.price).toFixed(2)}</td>
+  
                   <td className="p-4">
-                  <input
-                    type="number"
-                    min="1"
-                    value={item.quantity}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      if (isNaN(value) || value < 1) return;
-                      updateCartQuantity(item._id, value);
-                    }}
-                    className="w-20 p-1 border rounded text-center"
-                  />
-
+                    <input
+                      type="number"
+                      min="1"
+                      value={item.quantity}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!value || value < 1) return;
+                        updateCartQuantity(item._id, value);
+                      }}
+                      className="w-16 p-1 border rounded text-center"
+                    />
                   </td>
+  
                   <td className="p-4">
                     Ksh. {(Number(item.price) * item.quantity).toFixed(2)}
                   </td>
+  
                   <td className="p-4 text-center">
                     <button
                       onClick={() => removeCart(item._id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition"
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
                     >
                       Remove
                     </button>
@@ -160,79 +165,137 @@ export default function Cart({ cartItems, removeCart, updateCartQuantity }) {
               ))}
             </tbody>
           </table>
-
-          <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <span className="text-xl font-semibold">
-              Total: Ksh. {totalPrice.toFixed(2)}
-            </span>
-            <button
-              onClick={() => setShowDialog(true)}
-              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded transition"
-            >
-              Place order via WhatsApp
-            </button>
-          </div>
-
-          {/* Dialog */}
-          {showDialog && (
+        </div>
+  
+        {/* ---------- MOBILE VIEW (CARD STYLE) ---------- */}
+        <div className="md:hidden space-y-4">
+          {cartItems.map((item) => (
             <div
-              id="overlay"
-              onClick={handleOverlayClick}
-              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+              key={item._id}
+              className="bg-white p-4 rounded-lg shadow-md flex gap-3"
             >
-              <div className="bg-white p-6 rounded-xl w-full max-w-md relative">
-                <h2 className="text-2xl font-bold mb-4">Your Details</h2>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  value={userDetails.name}
-                  onChange={handleChange}
-                  className="w-full p-2 border mb-3 rounded"
-                />
-                <input
-                  type="text"
-                  name="phone"
-                  placeholder="Phone"
-                  value={userDetails.phone}
-                  onChange={handleChange}
-                  className="w-full p-2 border mb-3 rounded"
-                />
-                <input
-                  type="text"
-                  name="location"
-                  placeholder="Location"
-                  value={userDetails.location}
-                  onChange={handleChange}
-                  className="w-full p-2 border mb-3 rounded"
-                />
-                <input
-                  type="text"
-                  name="hostel"
-                  placeholder="Hostel Name"
-                  value={userDetails.hostel}
-                  onChange={handleChange}
-                  className="w-full p-2 border mb-3 rounded"
-                />
-                <div className="flex justify-between mt-4">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-20 h-20 rounded object-cover"
+              />
+  
+              <div className="flex-1">
+                <p className="font-semibold text-gray-800">{item.name}</p>
+                <p className="text-gray-600 text-sm">
+                  Ksh. {Number(item.price).toFixed(2)}
+                </p>
+  
+                <div className="mt-2 flex items-center gap-2">
+                  <input
+                    type="number"
+                    min="1"
+                    value={item.quantity}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (!value || value < 1) return;
+                      updateCartQuantity(item._id, value);
+                    }}
+                    className="w-14 p-1 border rounded text-center"
+                  />
+  
                   <button
-                    onClick={() => setShowDialog(false)}
-                    className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 transition"
+                    onClick={() => removeCart(item._id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
                   >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handlePlaceOrder}
-                    className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600 transition"
-                  >
-                    Send Order
+                    Remove
                   </button>
                 </div>
+  
+                <p className="mt-2 font-semibold">
+                  Subtotal: Ksh. {(Number(item.price) * item.quantity).toFixed(2)}
+                </p>
               </div>
             </div>
-          )}
+          ))}
         </div>
-      )}
-    </div>
+  
+        {/* TOTAL + BUTTON */}
+        <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <span className="text-xl font-semibold">
+            Total: Ksh. {totalPrice.toFixed(2)}
+          </span>
+  
+          <button
+            onClick={() => setShowDialog(true)}
+            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded"
+          >
+            Place order via WhatsApp
+          </button>
+        </div>
+  
+        {/* ------- DIALOG ------- */}
+        {showDialog && (
+          <div
+            id="overlay"
+            onClick={handleOverlayClick}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          >
+            <div className="bg-white p-6 rounded-xl w-full max-w-sm">
+              <h2 className="text-xl font-bold mb-4">Your Details</h2>
+  
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                value={userDetails.name}
+                onChange={handleChange}
+                className="w-full p-2 border mb-3 rounded"
+              />
+  
+              <input
+                type="text"
+                name="phone"
+                placeholder="Phone"
+                value={userDetails.phone}
+                onChange={handleChange}
+                className="w-full p-2 border mb-3 rounded"
+              />
+  
+              <input
+                type="text"
+                name="location"
+                placeholder="Location"
+                value={userDetails.location}
+                onChange={handleChange}
+                className="w-full p-2 border mb-3 rounded"
+              />
+  
+              <input
+                type="text"
+                name="hostel"
+                placeholder="Hostel Name"
+                value={userDetails.hostel}
+                onChange={handleChange}
+                className="w-full p-2 border mb-3 rounded"
+              />
+  
+              <div className="flex justify-between mt-4">
+                <button
+                  onClick={() => setShowDialog(false)}
+                  className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+  
+                <button
+                  onClick={handlePlaceOrder}
+                  className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600"
+                >
+                  Send Order
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+  
   );
 }

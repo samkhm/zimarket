@@ -18,9 +18,13 @@ export default function App() {
       try {
           const res = await API.get("/catalog/getItems");
           setItems(res.data);
-          console.log(res.data);
+          // console.log(res.data);
       } catch (error) {
-          console.log("Failed to get Items", error);
+        if (error.response && error.response.status === 404) {
+          // Ignore 404 errors
+        } else {
+          console.warn("Error fetching items:", error);
+        }
       } finally {
           setLoading(false);
       }
