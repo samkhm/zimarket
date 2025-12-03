@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+import API from "@/services/api";
+
 
 export default function Cart({ cartItems, removeCart, updateCartQuantity }) {
   const [showDialog, setShowDialog] = useState(false);
@@ -18,44 +21,81 @@ export default function Cart({ cartItems, removeCart, updateCartQuantity }) {
     setUserDetails({ ...userDetails, [e.target.name]: e.target.value });
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
+    // Prevent empty cart
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
+  
+    // Validate user details
     if (
       !userDetails.name ||
       !userDetails.phone ||
       !userDetails.location ||
       !userDetails.hostel
     ) {
-      alert("Please fill all fields");
+      toast.error("Please fill in all customer details.");
       return;
     }
-
-    // Construct a receipt-style WhatsApp message
+  
+    // Filter items that are still available
+    const availableOrderItems = cartItems.filter((item) => item.available);
+  
+    if (availableOrderItems.length === 0) {
+      toast.error("No available items in your cart.");
+      return;
+    }
+  
+    // Build WhatsApp receipt message
     let message = `🛒 *Order Receipt*\n\n`;
+  
     message += `*Customer Details*\n`;
-    message += `Name    : ${userDetails.name}\n`;
-    message += `Phone   : ${userDetails.phone}\n`;
+    message += `Name: ${userDetails.name}\n`;
+    message += `Phone: ${userDetails.phone}\n`;
     message += `Location: ${userDetails.location}\n`;
-    message += `Hostel  : ${userDetails.hostel}\n\n`;
-
+    message += `Hostel: ${userDetails.hostel}\n\n`;
+  
     message += `*Items*\n`;
     message += "--------------------------------\n";
     message += "`No  Item             Qty   Subtotal`\n";
-    cartItems.forEach((item, idx) => {
+  
+    availableOrderItems.forEach((item, idx) => {
       const subtotal = Number(item.price) * item.quantity;
       const name = item.name.padEnd(15, " ");
       const qty = item.quantity.toString().padEnd(5, " ");
+  
       message += `\`${idx + 1}. ${name} ${qty} Ksh.${subtotal}\`\n`;
     });
+  
     message += "--------------------------------\n";
     message += `*Total: Ksh. ${totalPrice.toFixed(2)}*`;
-
+  
     const encodedMessage = encodeURIComponent(message);
-    const sellerNumber = "254114303482"; // replace with your number
+    const sellerNumber = "254114303482";
     const waUrl = `https://wa.me/${sellerNumber}?text=${encodedMessage}`;
-
+  
+    try {
+      // MARK ITEMS UNAVAILABLE IN BACKEND
+      const resUpdate = await API.post("/catalog/markUnavailable", {
+        itemIds: availableOrderItems.map((item) => item._id),
+      });
+  
+      if (resUpdate.data) {
+        toast.success("Order sent and items updated!");
+      }
+    } catch (err) {
+      console.log("Failed to mark as unavailable:", err);
+      toast.error("Order sent, but failed to update item availability.");
+    }
+  
+    // Open WhatsApp
     window.open(waUrl, "_blank");
+  
+    // Close dialog
     setShowDialog(false);
   };
+  
 
   const handleOverlayClick = (e) => {
     if (e.target.id === "overlay") setShowDialog(false);

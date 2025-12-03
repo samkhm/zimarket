@@ -11,7 +11,7 @@ export default function Home({ addCart, items, loading}) {
         
         <div className='h-screen w-screen'>       
 
-            <div className='h-full p-10 flex flex-wrap flex-start gap-3'>
+            <div className='h-full p-1 justify-evenly flex flex-wrap flex-start gap-3'>
                 {loading ? (
                     <div className='w-full flex items-center justify-center'>
                         <Loader />

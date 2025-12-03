@@ -168,11 +168,11 @@ export default function CartPage() {
       await Linking.openURL(url);
   
       // --- UPDATE BACKEND: MARK ITEMS UNAVAILABLE ---
-      const resUo =   await API.post("/catalog/markUnavailable", {
+      const resUpdate =   await API.post("/catalog/markUnavailable", {
         itemIds: availableOrderItems.map((item) => item.id),
       });
       
-      if(resUo){
+      if(resUpdate){
         console.log("Marked itemm false")
       }
      
