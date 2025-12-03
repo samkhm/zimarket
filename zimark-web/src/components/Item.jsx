@@ -51,7 +51,7 @@ export default function Item({ item, addCart }) {
               size="sm"
               className="rounded-full bg-black text-white hover:bg-gray-800 text-xs md:text-sm px-3 py-1"
             >
-              View
+              Details
             </Button>
           </CardFooter>
         </Card>
